@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "vector.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "complex.h": "c",
+        "matrix.h": "c",
+        "glfw3.h": "c",
+        "glew.h": "c",
+        "stdbool.h": "c",
+        "stb_image.h": "c"
+    }
+}
