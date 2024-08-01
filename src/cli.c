@@ -45,6 +45,15 @@ int malbrot_converges(compx c, int max_iter) {
     int i = 0;  
     while(compx_len(zn) <= 2.0 && (i++) < max_iter) {
         zn = compx_add(compx_sqr(zn), c);
+
+        // derivative calculation
+        double modulus_derivative = abs(compx_scl(zn, 2.0).r);
+        if (modulus_derivative > 1.0) {
+            // adjust iter based on the derivative to speed up calculations
+            i += log(abs(modulus_derivative));
+            if (i >= max_iter) break;
+        }
+        ++i;
     }
 
     return i;
