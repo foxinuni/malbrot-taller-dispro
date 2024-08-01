@@ -8,6 +8,8 @@
         "glfw3.h": "c",
         "glew.h": "c",
         "stdbool.h": "c",
-        "stb_image.h": "c"
+        "stb_image.h": "c",
+        "random": "c",
+        "threads.h": "c"
     }
 }
