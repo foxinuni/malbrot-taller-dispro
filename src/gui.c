@@ -106,8 +106,8 @@ int main(int argc, char* argv[]) {
     }
 
     // Set window hints
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
     // Create window
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
     free(fragmentSource);
 
     float zoom = 1.0f;
-    float center_x = 0.0f;
+    float center_x = -0.7f;
     float center_y = 0.0f;
     float zoom_speed = 0.1f;
     float move_speed = 0.1f;
