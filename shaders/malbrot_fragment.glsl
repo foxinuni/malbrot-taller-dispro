@@ -31,11 +31,11 @@ void main() {
     vec2 z = c;
     int n = 0;
 
-    for (int i = 0; i < 250; i++) {
+    for (int i = 0; i < 75; i++) {
         if (length(z) > 2.0) break;
         z = vec2(z.x*z.x - z.y*z.y, 2.0 * z.x * z.y) + c;
         n += 1;
     }
 
-    FragColor = iteration_to_color(n, 250);
+    FragColor = iteration_to_color(n, 75);
 }

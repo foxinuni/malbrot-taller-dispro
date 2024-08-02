@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 // Include opengl and glfw and glew
 #include <GL/glew.h>
@@ -109,7 +110,8 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    
     // Create window
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Mandelbrot", NULL, NULL);
     if (!window) {
@@ -121,6 +123,7 @@ int main(int argc, char* argv[]) {
     // Make the window's context current
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+    glEnable(GL_MULTISAMPLE);
 
     // Initialize glew
     if (glewInit() != GLEW_OK) {
@@ -192,39 +195,57 @@ int main(int argc, char* argv[]) {
     free(vertexSource);
     free(fragmentSource);
 
-    float zoom = 1.0f;
-    float center_x = -0.7f;
-    float center_y = 0.0f;
-    float zoom_speed = 0.1f;
-    float move_speed = 0.1f;
+    double zoom = 1.0f;
+    double center_x = -0.7f;
+    double center_y = 0.0f;
+    double zoom_speed = 0.5f;
+    double move_speed = 0.8f;
+    
+    // delta time
+    double last_time = glfwGetTime();
+    double delta_time = 0.0;
 
     while (!glfwWindowShouldClose(window)) {
+        // calculate delta time
+        double current_time = glfwGetTime();
+        delta_time = current_time - last_time;
+        last_time = current_time;
+
+        // clear the screen
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-            center_y += move_speed;
+            center_y += move_speed * delta_time;
         }
 
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            center_y -= move_speed;
+            center_y -= move_speed * delta_time;
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            center_x -= move_speed;
+            center_x -= move_speed * delta_time;
         }
 
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            center_x += move_speed;
+            center_x += move_speed * delta_time;
         }
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            zoom += zoom_speed;
-            move_speed = 0.1f / zoom;
+            zoom *= exp(zoom_speed * delta_time);
+            move_speed = 0.8f / zoom;
         }
 
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            zoom -= zoom_speed;
-            move_speed = 0.1f / zoom;
+            zoom /= exp(zoom_speed * delta_time);
+            move_speed = 0.8f / zoom;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+            zoom = 1.0f;
+            center_x = -0.7f;
+            center_y = 0.0f;
+            zoom_speed = 0.5f;
+            move_speed = 0.8f;
         }
 
         // use the shader program
