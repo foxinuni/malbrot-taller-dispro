@@ -1,3 +1,5 @@
 build/
 .*.png
 .*.txt
+*.pbm
+*.ppm
