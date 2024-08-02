@@ -23,6 +23,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_executable(cli ${CLI_SRC} ${MATH_SRC})
 target_link_libraries(cli m)
 
+# Define the CLI target
+#target_compile_definitions(cli PRIVATE CLI_DERIVATIVE_OPTIMIZATION CLI_TARGET_PNG)
+
 # Add source files for the GUI target
 add_executable(gui ${GUI_SRC} ${MATH_SRC})
 target_link_libraries(gui m glfw OpenGL::GL GLEW::GLEW)

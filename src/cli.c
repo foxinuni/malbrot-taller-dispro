@@ -2,18 +2,20 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#ifdef CLI_TARGET_PNG
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include <stb/stb_image.h>
 #include <stb/stb_image_write.h>
+#endif
 
 #include "math/vector.h"
 #include "math/complex.h"
 #include "math/matrix.h"
 
-#define WIDTH 30720
-#define HEIGHT 17280
+#define WIDTH 4096
+#define HEIGHT 2160 
 #define THREADS 8
 
 typedef struct {
@@ -47,12 +49,15 @@ int malbrot_converges(compx c, int max_iter) {
         zn = compx_add(compx_sqr(zn), c);
 
         // derivative calculation
+        #ifdef CLI_DERIVATIVE_OPTIMIZATION
         double modulus_derivative = abs(compx_scl(zn, 2.0).r);
         if (modulus_derivative > 1.0) {
             // adjust iter based on the derivative to speed up calculations
             i += log(abs(modulus_derivative));
             if (i >= max_iter) break;
         }
+        #endif 
+
         ++i;
     }
 
@@ -102,14 +107,16 @@ void malbrot_trace(unsigned char* image, int max_iter) {
             exit(-1);
         }
 
-        printf("Thread %d created (pid: %ld, offset: %d, stride %d)\n", i, threads[i], current.offset, current.stride);
+        printf("Thread %d created (pid: %ld, offset: %d, stride %d)\n", i + 1, threads[i], current.offset, current.stride);
     }
 
     // wait for threads to finish
     for (int i = 0; i < THREADS; i++) {
         pthread_join(threads[i], NULL);
-        printf("Thread %d finished\n", i);
+        printf("\rCompleted thread %d/%d ", i + 1, THREADS);
     }
+
+    printf("DONE\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -130,8 +137,27 @@ int main(int argc, char* argv[]) {
     malbrot_trace(image, max_iter);
 
     // write image to disk
-    printf("Writing image to %s\n", output_image);
+    printf("Writing image to %s...\n", output_image);
+
+    #ifdef CLI_TARGET_PNG
+    // write image to disk
     stbi_write_png(output_image, WIDTH, HEIGHT, 3, image, WIDTH * 3);
+    #else
+    FILE* file = fopen(output_image, "wb");
+    if (!file) {
+        printf("Failed to open file: %s\n", output_image);
+        return 1;
+    }
+
+    // write ppm header
+    fwrite("P6\n", 1, 3, file);
+    fprintf(file, "%d %d\n", WIDTH, HEIGHT);
+    fprintf(file, "%d\n", 255);
+    fwrite(image, 1, WIDTH * HEIGHT * 3, file);
+
+    // close file
+    fclose(file);
+    #endif
 
     // free memory
     free(image);
